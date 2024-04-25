@@ -14,6 +14,7 @@ body {
 }
 
 .header {
+  position: relative;
   margin: 0px;
   width: 100%;
   display: flex;
@@ -37,20 +38,76 @@ body {
   color: black;
 }
 
+.dupItemContainer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.dupItemCard {
+  width: 160px;
+  height: 200px;
+  margin: 10px;
+  transition: 1s;
+  background-color: lightgray;
+}
+
+.dupContainer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.dupCards {
+  margin: 20px;
+  padding: 20px 20px;
+  border-radius: 10px;
+  width: 250px;
+  height: 300px;
+  background-color: lightgray;
+}
+
 .bodyContainer {
   background-color: azure;
 }
 
-.search {
+.search,
+input {
+  position: absolute;
+  top: -160px;
   margin: auto;
   padding: 10px;
-  border: 1px solid grey;
+  border: none;
   border-radius: 20px;
   width: 40%;
   transition: 1s;
+  position: relative;
 }
 
-.search:hover {
+.search input {
+  width: 100%;
+}
+
+.search input:focus {
+  outline: none;
+}
+
+.search button {
+  position: absolute;
+  top: -150px;
+  padding: 10px;
+  background-color: black;
+  color: white;
+  right: 10px;
+  border: none;
+}
+
+.search button:hover {
+  background-color: lightskyblue;
+  color: black;
+}
+
+.search input:hover {
   box-shadow: 0px 0px 4px;
 }
 
@@ -61,7 +118,7 @@ body {
 }
 
 .itemcard a img {
-  width: 180px;
+  width: 160px;
   height: 200px;
   margin: 10px;
   transition: 1s;
@@ -73,6 +130,24 @@ body {
   box-shadow: 0px 0px 4px;
 }
 
+.filter-btn {
+  margin-left: 100px;
+  padding: 10px;
+  margin-top: -60px;
+}
+
+button {
+  padding: 15px;
+  border-radius: 10px;
+  background-color: lightgreen;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: green;
+  color: white;
+}
+
 .restaurantContainer {
   display: flex;
   flex-wrap: wrap;
@@ -81,30 +156,45 @@ body {
 
 .rescard {
   margin: 20px;
-  padding: 15px 35px;
-  border-radius: 10px;
-  transition: 1s;
+  border-radius: 5px;
+  transition: 0.5s;
+  width: 250px;
+  line-height: 1.2;
+  font-size: 16px;
   text-align: center;
-  box-sizing: border-box;
-  font-size: 14px;
+  border: 1.5px solid black;
 }
 
 .rescard:hover {
-  box-shadow: 0px 0px 5px;
+  box-shadow: 0px 0px 12px;
 }
 
-.rescard:hover img {
-  height: 120px;
+.rescard a {
+  text-decoration: none;
+  color: black;
 }
 
+.nameStyle {
+  font-weight: bold;
+  font-size: 20px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+/*
 .cui {
-  box-sizing: content-box;
+  text-wrap: wrap;
+  text-overflow: ellipsis;
+  box-sizing: border-box;
 }
+*/
 
 .img1 {
-  height: 150px;
-  border-radius: 50px;
+  height: 200px;
+  width: 248px;
   transition: 1s;
+  border-radius: 5px;
 }
 
 .footer {
