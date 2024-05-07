@@ -1,10 +1,11 @@
 import resObj from "../utils/mockdata";
-
-import { useState } from "react";
-import { useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import Shimmer from "./Shimmer";
 import ItemCard from "./ItemCard";
-import ResCard1 from "./ResCard1";
+import ResCard1, { withPromotedData } from "./ResCard1";
+import { Link } from "react-router-dom";
+import useOnlineStatus from "../utils/useOnlineStatus";
+import UserContext from "../utils/UserContext";
 
 /* const ResCard = (props) => {
   console.log(props);
@@ -19,15 +20,33 @@ import ResCard1 from "./ResCard1";
 }; */
 
 const Body = () => {
+  // console.log("entered 1");
+
   const [newresObj, setnewResObj] = useState([]);
 
   const [filteredRes, setfilteredRes] = useState([]);
 
   const [searchValue, setsearchValue] = useState("");
 
+  const ResCardPromoted = withPromotedData(ResCard1);
+
+  const { loginusername } = useContext(UserContext);
+
+  const { setusername } = useContext(UserContext);
+
+  //  console.log("entered 2");
+
   useEffect(() => {
     fetchData();
   }, []);
+
+  // console.log("entered 3");
+
+  useEffect(() => {
+    SearchButton();
+  }, [searchValue]);
+
+  // console.log("entered 4");
 
   const fetchData = async () => {
     const data = await fetch(
@@ -35,32 +54,44 @@ const Body = () => {
     );
 
     const json = await data.json();
+    // console.log(json);
     setnewResObj(
-      json.data.cards[4].card.card.gridElements.infoWithStyle.restaurants
+      json?.data?.cards[4]?.card?.card?.gridElements?.infoWithStyle?.restaurants
     );
     setfilteredRes(
-      json.data.cards[4].card.card.gridElements.infoWithStyle.restaurants
+      json?.data?.cards[4]?.card?.card?.gridElements?.infoWithStyle?.restaurants
     );
   };
 
-  if (filteredRes.length === 0) {
+  const onlineStatus = useOnlineStatus();
+  if (onlineStatus === false) {
+    return <h1>Your Internet Connection lost...</h1>;
+  }
+
+  if (filteredRes.length == 0) {
+    // console.log("entered shimmer");
     return <Shimmer />;
   }
 
   function SearchButton() {
-    const filteredSearch = newresObj.filter((res) =>
-      res.info.name.toLowerCase().includes(searchValue.toLowerCase())
-    );
+    const filteredSearch = newresObj.filter((res) => {
+      return (
+        res.info.name.toLowerCase().startsWith(searchValue.toLowerCase()) ||
+        res.info.name.toLowerCase().includes(searchValue.toLowerCase())
+      );
+    });
 
-    console.log(filteredSearch);
+    // console.log(filteredSearch);
     if (filteredSearch !== 0) {
       setfilteredRes(filteredSearch);
     }
-    if (filteredSearch == 0) {
-      alert("No Restaurants Are There");
+    if (filteredSearch == 0 && searchValue !== "") {
+      //   alert("No Restaurants Are There");
       setfilteredRes(newresObj);
     }
   }
+
+  // console.log("entered 5");
 
   function FilterByRating() {
     const filterResRating = newresObj.filter((res) => res.info.avgRating > 4.3);
@@ -74,55 +105,66 @@ const Body = () => {
     }
   }
 
-  return (
-    <div className="bodyContainer">
-      <div className="itemContainer">
-        <ItemCard />
-      </div>
+  // console.log("entered 10");
 
-      <div className="search">
+  return (
+    <div className="bg-neutral-100">
+      <div>
         <input
+          className="w-1/4 rounded-md m-auto p-2 border-s-violet-500 absolute top-11 left-40  hover:shadow-xl hover:outline-1"
           type="text"
+          data-testid="searchInput"
           placeholder="Search Here...."
           value={searchValue}
           onChange={(e) => {
             setsearchValue(e.target.value);
           }}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              {
-                SearchButton();
-              }
-            }
-          }}
         ></input>
-
-        <button
-          onClick={() => {
-            {
-              SearchButton();
-            }
-          }}
-        >
-          Search
-        </button>
       </div>
 
-      <div className="filter-btn">
+      <div className="filter-btn ml-24 p-3">
         <button
+          className=" rounded-lg bg-green-400 cursor-pointer p-3 hover:bg-green-700 hover:text-white"
           onClick={() => {
             FilterByRating();
           }}
         >
           {" "}
-          Filter Best Rated Restaurants above 4.3{" "}
+          Filter Restaurants above 4.3 Rating{" "}
         </button>
+
+        <input
+          type="text"
+          className="border border-black mx-5 rounded-lg p-3"
+          value={loginusername}
+          onChange={(e) => setusername(e.target.value)}
+        ></input>
       </div>
 
-      <div className="restaurantContainer">
+      {/* Key should be used inside map function to avoid warning of id*/}
+      <div className="flex flex-wrap justify-center">
         {filteredRes.map((restaurant) => {
-          return <ResCard1 key={restaurant.info.id} resData={restaurant} />;
+          //console.log(restaurant);
+          return (
+            <Link
+              key={restaurant.info.id}
+              to={"restaurant/" + restaurant.info.id}
+            >
+              {" "}
+              {restaurant.info.isOpen ? (
+                <ResCardPromoted resdata={restaurant} />
+              ) : (
+                <ResCard1 resdata={restaurant} />
+              )}{" "}
+            </Link>
+          );
         })}
+
+        <hr></hr>
+
+        <div>
+          <ItemCard />
+        </div>
 
         {/* <ResCard
           resname="Akash Foods"
